@@ -1,2 +1,2 @@
-progressbar33==2.4
+progress==1.6
 Requests==2.31.0
