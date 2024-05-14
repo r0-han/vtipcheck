@@ -7,6 +7,7 @@ import json
 import os
 import requests
 from progress.bar import IncrementalBar
+from time import sleep
 
 # function to get result from virustotal for specified ip address
 
@@ -22,7 +23,7 @@ def get_ip_data(ip_addr, api_key):
             exit()
 
         if response.json()["error"]["code"] == "QuotaExceededError":
-            print("Public API quota full")
+            print("\nPublic API quota full")
             exit()
 
     except KeyError:
@@ -86,6 +87,7 @@ def data_entry(res_file, input_filename, api_key):
                     out_file, fieldnames=csv_headers)
                 dictwriter_object.writerow(dict_data)
             incr_bar.next()
+            sleep(0.1)
         incr_bar.finish()
     print("File created successfully")
 
@@ -110,7 +112,7 @@ def main():
         if os.path.exists(res_file):
             user_response = (
                 input(
-                    "results.csv file already exists. If you continue, this will append to already existing data. Do you want to continue? (yes/no): "
+                    "results.csv file already exists. If you continue, this will overwrite to already existing file. Do you want to continue? (yes/no): "
                 )
                 .strip()
                 .lower()
