@@ -16,4 +16,4 @@ vtipcheck is a tool designed to verify if an IP address has been flagged as mali
 ![Help menu](./help.png)
 
 - Search list of IP addresses present in a file
-    `python3 vtipcheck.py --apikey <YOUR_API_KEY> --file <IP_FILE>`
+    - `python3 vtipcheck.py --apikey <YOUR_API_KEY> --file <IP_FILE>`
