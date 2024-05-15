@@ -8,6 +8,8 @@ import os
 import requests
 from progress.bar import IncrementalBar
 from time import sleep
+import ipaddress
+
 
 # function to get result from virustotal for specified ip address
 
@@ -52,8 +54,14 @@ def data_entry(res_file, input_filename, api_key):
             ip_address), fill='|', suffix='%(percent)d%%')
         for ip in ip_address:
             ip = ip.rstrip("\n")
-            # print("trying for " + ip)
-            virustotal_data = get_ip_data(ip, api_key)
+            try:
+                check_ip = ipaddress.ip_address(ip)
+                virustotal_data = get_ip_data(ip, api_key)
+
+            except ValueError:
+                print(f"Skipped {ip} as it is not valid ip address")
+                continue
+
             mal_count = virustotal_data['data']["attributes"][
                 "last_analysis_stats"
             ]["malicious"]
@@ -87,7 +95,8 @@ def data_entry(res_file, input_filename, api_key):
                     out_file, fieldnames=csv_headers)
                 dictwriter_object.writerow(dict_data)
             incr_bar.next()
-            sleep(0.1)
+            print('\r')
+            sleep(2)
         incr_bar.finish()
     print("File created successfully")
 
@@ -105,10 +114,11 @@ def main():
         required=True,
     )
     args = parser.parse_args(args=None if sys.argv[1:] else ["--help"])
-    input_filename = args.file
-    api_key = args.apikey
-    res_file = "results_" + datetime.datetime.now().strftime("%Y-%m-%d") + ".csv"
     try:
+        input_filename = args.file
+        api_key = args.apikey
+        res_file = "results_" + datetime.datetime.now().strftime("%Y-%m-%d") + ".csv"
+
         if os.path.exists(res_file):
             user_response = (
                 input(
@@ -125,6 +135,9 @@ def main():
 
     except KeyboardInterrupt:
         print("User interrupted")
+
+    except FileNotFoundError:
+        print("Filename is incorrect. Check the filename again and restart the program.")
 
 
 if __name__ == "__main__":
